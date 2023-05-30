@@ -4,7 +4,7 @@
 
 ### `sample.py`
 
-** Arguments ** 
+**Arguments** 
 * location - state that you’re creating an ensemble for
 * chaintype - determines whether you’re running a neutral chain (always accept the next step) or a tilted (annealing) chain (accept probabilistically)
 * mag_list - a list of numbers that denotes the number of 3 member, 4 member, and 5 member districts. I.e. “[8, 0, 0]” would create 8 3 member districts.
