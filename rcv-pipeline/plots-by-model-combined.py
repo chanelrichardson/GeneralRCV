@@ -15,12 +15,20 @@ from collections import Counter
 
 from ModelingResult import ModelingResult, aggregate
 
+loc_add = 0
+nested_str = ""
+if len(sys.argv) > 3: 
+    if len(sys.argv) == 4 and sys.argv[-1] == "--nested":
+        nested_str = "-nested"
+        loc_add = -1
+    else: 
+        raise ValueError("Additional arguments were provided, but are invalid. Assuming this is not a nested configuration.")
 # Get the location for the chain and the bias.
-config_str = sys.argv[-1]
-mag_list = json.loads(sys.argv[-2])
-location = us.states.lookup(sys.argv[-3].title(), field="name")
+mag_list = json.loads(sys.argv[-1+loc_add])
+location = us.states.lookup(sys.argv[-2+loc_add].title(), field="name")
 focus = { us.states.FL, us.states.IL, us.states.MA, us.states.MD, us.states.TX }
 
+mag_str = f"{mag_list[0]}-{mag_list[1]}-{mag_list[2]}"
 # Get the configuration for the state.
 poc = pd.read_csv("./data/demographics/pocrepresentation.csv")
 statewide = pd.read_csv("./data/demographics/summary.csv")
@@ -36,7 +44,7 @@ turnoutsuffix = ""
 if REDUCEDTURNOUT: turnoutsuffix = "_low_turnout"
 # Load the plans for the ensemble.
 output = Path("./output/")
-planpath = Path(output/f"results/{location.name.lower()}/{location.name.lower()}-{mag_list[0]}-{mag_list[1]}-{mag_list[2]}-{config_str}/")
+planpath = Path(output/f"results/{location.name.lower()}/{location.name.lower()}-{mag_str}{nested_str}/")
 
 if location in focus:
     ensembletypes = ["neutral", "tilted"]
@@ -157,10 +165,7 @@ cdefs = dict(
     zorder=1
 )
 
-if "partisan" in config_str:
-  circle_color = "tomato"
-else:
-  circle_color = "mediumpurple"
+
 
 for name, model in modelresults.items():
     for x, share in model.items():
@@ -169,7 +174,7 @@ for name, model in modelresults.items():
         print(sr)
         print(x, ymax-(y+1))
         # Plot a circle!
-        color = "steelblue" if name == "Combined" else circle_color
+        color = "steelblue" if name == "Combined" else "mediumpurple"
         C = Circle((x, ymax-(y+1) if name == "Combined" else ymax-y), sr, facecolor=color)
         ax.add_patch(C)
 
@@ -259,7 +264,7 @@ ax.legend(
 bbox = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
 width, height = bbox.width, bbox.height
 
-figpath = f"./output/figures/nationwide/{location}/ma-{mag_list[0]}-{mag_list[1]}-{mag_list[2]}"
+figpath = f"./output/figures/nationwide/{location}/ma-{mag_str}"
 
 os.makedirs(figpath, exist_ok=True)
-plt.savefig(f"{figpath}/plots-by-model-combined-{mag_list[0]}-{mag_list[1]}-{mag_list[2]}-{config_str}.png", dpi=600, bbox_inches="tight")
+plt.savefig(f"{figpath}/plots-by-model-combined-{mag_str}.png", dpi=600, bbox_inches="tight")
