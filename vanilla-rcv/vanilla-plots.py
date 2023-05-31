@@ -17,9 +17,8 @@ warnings.filterwarnings("ignore")
 from ModelingResult import ModelingResult, aggregate
 
 # Get the location for the chain and the bias.
-config_str = sys.argv[-1]
-totmembers = int(sys.argv[-2])
-location = us.states.lookup(sys.argv[-3].title(), field="name")
+totmembers = int(sys.argv[-1])
+location = us.states.lookup(sys.argv[-2].title(), field="name")
 focus = { us.states.FL, us.states.IL, us.states.MA, us.states.MD, us.states.TX }
 
 # Get the configuration for the state.
@@ -37,7 +36,7 @@ turnoutsuffix = ""
 if REDUCEDTURNOUT: turnoutsuffix = "_low_turnout"
 # Load the plans for the ensemble.
 output = Path("./output/")
-planpath = Path(output/f"results/{location.name.lower()}/{location.name.lower()}-{totmembers}-vanilla-{config_str}/")
+planpath = Path(output/f"results/{location.name.lower()}/{location.name.lower()}-{totmembers}-vanilla/")
 
 ensembletypes = ["neutral"]
 tilted = False
@@ -252,4 +251,4 @@ width, height = bbox.width, bbox.height
 figpath = f"./output/figures/nationwide/{location}/ma-{totmembers}-vanilla"
 
 os.makedirs(figpath, exist_ok=True)
-plt.savefig(f"{figpath}/plots-by-model-combined-{totmembers}-vanilla-{config_str}.png", dpi=600, bbox_inches="tight")
+plt.savefig(f"{figpath}/plots-by-model-combined-{totmembers}-vanilla.png", dpi=600, bbox_inches="tight")

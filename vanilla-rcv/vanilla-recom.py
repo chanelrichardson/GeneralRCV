@@ -70,8 +70,6 @@ updaters = {
 }
 
 # Create the initial partition.
-#seed_1 = pd.read_csv("good_seed_1.csv", dtype={"GEOID20":str}).set_index("GEOID20").to_dict()["assignment"]
-#assignment = {n: seed_1[G.nodes[n]["id"]] for n in G.nodes}
 
 initial = Partition(
     G, assignment=assignment, updaters=updaters

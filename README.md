@@ -220,6 +220,66 @@ Creates plots visualizing the number of POC preferred seats won within the ensem
 **Output**
 An image visualizing each of the models and the number of seats won by POC preferred candidates across plans. 
 
+## Vanilla Recom
+A separate folder exists here called vanilla-rcv which does a regular vanilla recom run in the same style as the rest of the RCV pipeline 
+
+### `vanilla-recom.py`
+
+Corresponds to `sample.py`. 
+
+Similarly, there are parameters to be set manually within the code (they are the same parameters mentioned above).
+
+I've only set this up to do neutral runs, this also doens't have region_aware support. 
+
+**Arguments**
+* location - state you're running recom on
+* districts - number of districts to create
+
+**Output** 
+Two outputs, one with the information tracked in the updaters for every plan in the ensemble. The other file contains assignments from graph node ids to assignments. 
+
+### `vanilla-records.py`
+
+Reformats the records from `vanilla-recom.py`. 
+
+**Arguments**
+* location - state you're getting records for
+* districts - number of districts in the plan you're getting records for. 
+
+### `vanilla-config.py`
+
+Creates the file of ModelingConfiguration results to be used for rcv simulation. 
+
+**Arguments**
+* location - state you're making a configuration file for
+* dsitricts - number of districts in the plan you're creating a configuration file for. 
+
+### `vanilla-sim.py`
+
+Runs the rcv simulation on the vanilla plan. Will need to run this file individually for each plan in the ensemble.
+
+**Arguments**
+* location - state you're running rcv simulation on
+* INDEX - index for the plan you're running on. 
+* districts - number of districts in the plan you're doing rcv simulation on. 
+
+**Output** 
+Files for each plan with ModelingResult objects that contain the number of seats won by POC preferred candidates in each district of the plan for each configuration scenario.
+
+### `vanilla-plots.py`
+
+Creates the seats plot for the vanilla recom plans. I'm not sure why, but I haven't gotten this one to work. 
+
+**Arguments**
+* location - state to create the plot for
+* totmembers - number of districts in the plan
+
+**Output**
+*Ideally* the seats plot for the vanilla recom run. 
+
+
+
+
 
 **Other python files are included in this repository that have not been changed nor used by me. I kept around files that are available in Anthony’s original “FairVote-FRA” repository available at github.com/mggg/FairVote-FRA.**
 

@@ -18,7 +18,7 @@ import glob
 # Suppress all warnings.
 warnings.filterwarnings("ignore")
 
-config_str = sys.argv[-1]
+
 location = sys.argv[-4].replace("-", " ")
 JURIS = us.states.lookup(location.title(), field="name")
 
@@ -66,8 +66,8 @@ TEST = False
 BIAS = "neutral"
 # Read in modeling information and create ModelingConfigurations from each of the
 # raw ones.
-configs = glob.glob(f"configurations/{location}/{config_str}/config-{districts}-vanilla.json")
-print(configs)
+configs = glob.glob(f"configurations/{location}/config-{districts}-vanilla.json")
+
 for config_name in configs:
   with open(config_name) as r: plans = json.load(r)[JURIS.name.lower()][BIAS]
 
@@ -163,7 +163,7 @@ for config_name in configs:
 
         
   # Write to file!
-  write = Path(f"./output/results/{location}/{location}-{districts}-vanilla-{config_str}")
+  write = Path(f"./output/results/{location}/{location}-{districts}-vanilla")
   os.makedirs(write, exist_ok = True)
   #if not write.exists(): write.mkdir()
 
