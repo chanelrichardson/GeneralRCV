@@ -182,10 +182,9 @@ Creates plots visualizing the number of POC preferred seats won within the ensem
 An image visualizing each of the models and the number of seats won by POC preferred candidates across plans. 
 
 
-Other python files are included in this repository that have not been changed nor used by me. I kept around files that were available in Anthony’s original “FairVote-FRA” repository available at github.com/mggg/FairVote-FRA.
+**Other python files are included in this repository that have not been changed nor used by me. I kept around files that are available in Anthony’s original “FairVote-FRA” repository available at github.com/mggg/FairVote-FRA.**
 
 
-Creating an ensemble + running RCV simulation on an ensemble created by nesting into a specific plan. 
 
 
 
