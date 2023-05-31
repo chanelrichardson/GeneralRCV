@@ -1,10 +1,27 @@
 # RCV PIPELINE OVERVIEW 
+**While this is called GeneralRCV, this pipeline has only been used in Massachusetts.**
+
 
 ## Flow for creating an ensemble, and running RCV simulation.
 
+
 ### `sample.py`
 
+In order to use this file, you'll need to run this: 
+`pip install git+https://github.com/jenni-niels/GerryChain@multi-member-recom`
+
+Within this file, we're running a chain that makes multimember partitions of the provided graph. This file calls on the graph for the location provided in the arguments. All graphs were created by Anthony Pizzimenti and are available in data/graphs. I believe all of these are vtd level graphs. 
+
+There's some parameters that are set within the file. These are things like `TEST`. When set to True, this script will output different files for the chain (a seats file, annealing file, and )
+
+This file is currently also set up to take a subsample of plans from a full chain run. The reason this is set to so few plans, is because further down the line, the time increases significantly. Further explanation in the `rcv-simulation.py` section. 
+
+You can also change the `EPSILON` for the districts created and the `ITERATIONS` (number of steps in the chain). 
+
 **Arguments** 
+
+`python sample.py [location] [chaintype] [mag_list]`
+
 * location - state that you’re creating an ensemble for
 * chaintype - determines whether you’re running a neutral chain (always accept the next step) or a tilted (annealing) chain (accept probabilistically)
 * mag_list - a list of numbers that denotes the number of 3 member, 4 member, and 5 member districts. I.e. “[8, 0, 0]” would create 8 3 member districts.
@@ -18,8 +35,14 @@ You’ll get {chaintype}.jsonl and {chaintype}-assignments.jsonl (If ASSIGNMENTS
 The assignments file maps node ids to district assignments. **Note that these are not GEOIDs**, and you’ll have to work with the graph to recover which node id maps to which GEOID. 
 
 
+
 ### `score-records.py` 
+Takes the scores output from the original `sample.py` file, and reformats them for further use. 
+
 **Arguments**
+
+`python score-records.py [location] [bias] [mag_list]`
+
 * location -state that you want to score an ensemble for
 * bias - denotes whether you’re scoring a neutral or tilted ensemble
 * mag_list - a list of numbers that denotes the number of 3 member, 4 member, and 5 member districts for the configuration you’re scoring. 
@@ -29,7 +52,10 @@ This gives the same scores as {chaintype}.jsonl in a more structured format.
 
 ### `make-config.py`
 The configuration file is used within the RCV simulation to define a variety of parameters. These
-specific parameters and their descriptions can be found in `ModelingConfiguration.py`.
+specific parameters and their descriptions can be found in `ModelingConfiguration.py`. The parameters 
+currently in this file are all specific to Massachusetts, so be sure to change them accordingly. This file 
+was also created for MA modeling, and I'm not sure how configuration files were created for the FairVote
+project.
 
 The configuration is a large dictionary. At the top level there's one key per state. The configuration file
 doesn't need to include all 50 states, just the states you want to run on. 
@@ -47,6 +73,9 @@ you may want to vary the model type, or something else. When all of the results 
 combined, so keep that in mind. For example, you wouldn't want to aggregate rcv-simulations where there's a different number of total seats available, because it wouldn't be an accurate comparison.
 
 **Arguments**
+
+`python make-config.py [location] [mag_list]`
+
 * location - state to make a configuration for
 * mag_list - a list of numbers that denotes the number of 3 member, 4 member, and 5 member districts for the configuration you’re creating a configuration for. 
 
@@ -55,9 +84,16 @@ Jsonl file that has a configuration for a state.
 
 
 ### `rcv-simulation.py`
-Runs the actual RCV simulation on your plan. This models all configurations detailed in the configuration file you just created. 
+Runs the actual RCV simulation on your plan (only does one plan at a time, so you have to run this script for each of the indvidual plans in the ensemble). This models all configurations detailed in the configuration file you just created. 
+
+This interfaces largely with a lot of inner workings of the specific election models. The behind the scenes work is happening in `model_details.py`. I'm not as familiar with this file, and haven't altered it. 
+
+In running this, the imports from the `accept.py` file gave me issues at various times. I never really figured out the issue/how to fix without just continuing to re-run this simulation file until it worked (but it always worked eventually).
 
 **Arguments**
+
+`python rcv-simulation.py [location] [BIAS] [INDEX] [MAG_LIST]`
+
 * location - state you're simulating RCV elections on
 * BIAS - the type of chain you're running RCV on (neutral or tilted)
 * INDEX - index of the plan within the ensemble you're running a simulation on
@@ -71,6 +107,9 @@ Runs the actual RCV simulation on your plan. This models all configurations deta
 Creates plots visualizing the number of POC preferred seats won within the ensemble.
 
 **Arguments**
+
+`python plots-by-model-combined.py [location] [mag_list]` 
+
 * location - state you're creating a plot for
 * mag_list - a list of numbers that denotes the number of 3 member, 4 member, and 5 member districts for the configuration you’re plotting
 
