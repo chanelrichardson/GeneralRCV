@@ -91,8 +91,6 @@ for d, district in enumerate(tqdm(plan)):
     for config in district:
         # Get the modeling configuration.
         configuration = ModelingConfiguration(**config)
-        print(configuration.poccandidates)
-        print(config["poccandidates"])
         # Create a basic run configuration, which is modified based on whether
         # we're testing or not.
         runconfig = dict(

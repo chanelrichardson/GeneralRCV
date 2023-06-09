@@ -4,7 +4,7 @@ import us
 import sys
 from pathlib import Path
 import json
-
+import os
 
 # the first argument here is the location to score, the second 
 # is denotes whether you're scoring a neutral or tilted ensemble. 
@@ -50,7 +50,7 @@ for plan in plans:
     record = {
         district: {
             prop: plan[prop][district]
-            for prop in ["population", "POCVAP20", "VAP20", "WARREN18", "DIEHL18", "MAGNITUDE", "BHVAP20"]
+            for prop in ["population", "POCVAP20", "VAP20", "MAGNITUDE"]
         }
         for district in dkeys
     }
@@ -58,18 +58,14 @@ for plan in plans:
     # Get the POCVAP percentage.
     for district in dkeys:
         record[district]["POCVAP20%"] = record[district]["POCVAP20"]/record[district]["VAP20"]
-        record[district]["BHVAP20%"] = record[district]["BHVAP20"]/record[district]["VAP20"]
-        record[district]["WARREN18%"] = record[district]["WARREN18"]/(record[district]["WARREN18"] + record[district]["DIEHL18"])
 
     # Get the number of "POC seats"
     for district in dkeys:
         threshold = 1/(record[district]["MAGNITUDE"]+1)
-        record[district]["BHSEATS"] = record[district]["BHVAP20%"]//threshold
         record[district]["POCSEATS"] = record[district]["POCVAP20%"]//threshold
-        record[district]["DEMSEATS"] = record[district]["WARREN18%"]//threshold
 
     records.append(record)
 
 # Write back to file.
-if not write.exists(): write.mkdir()
+os.makedirs(write, exist_ok = True)
 with jsonlines.open(write/f"{bias}.jsonl", mode="w") as w: w.write_all(records)

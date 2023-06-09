@@ -15,6 +15,8 @@ import math
 import random
 import numpy as np
 
+import os
+
 from accept import (
     mh, mmpreference, districts as magnituder, totalseats, annealing,
     logistic, step, logicycle
@@ -54,19 +56,7 @@ TEST = False
 # subsample.
 # Read in the dual graph and the groupings.
 G = Graph.from_json(f"./data/graphs/{location}.json")
-with open("./groupings.json") as f: info = json.load(f)
 
-# Explode the districts.
-# Currently the optimal grouping comes from running groupings.py
-# on your location, BUT this gives you FairVote's optimal grouping. 
-# The best way to override this is to change what the optimal
-# grouping is in the file itself. It COULD be another argument, 
-# but that's starting to feel a bit lengthy :/.
-districts = info[location]["districts"]
-#grouping = info[location]["optimal"]
-
-# For the optimal grouping, create a dictionary that maps 
-# district numbers to their magnitudes.
 
 magnitudes = {}
 last = 1
@@ -101,10 +91,7 @@ updaters = {
     "population": Tally(POPCOL, "population"),
     "cut_edges": cut_edges,
     "POCVAP20": Tally("POCVAP20", "POCVAP20"),
-    "BHVAP20": Tally("BHVAP20", "BHVAP20"),
     "VAP20": Tally("VAP20", "VAP20"),
-    "WARREN18": Tally("WARREN18", "WARREN18"),
-    "DIEHL18": Tally("DIEHL18", "DIEHL18"),
     "PREFERENCE": mmpreference("POCVAP20", "VAP20", pocvap/vap),
     "MAGNITUDE": lambda P: { d: counter(P["population"][d]) for d in P.parts },
     "SEATS": totalseats,
@@ -154,7 +141,7 @@ chain = MarkovChain(
 # Create an empty list for plot data.
 data = []
 assignments = []
-collectible = ["population", "POCVAP20", "BHVAP20", "VAP20", "WARREN18", "DIEHL18", "MAGNITUDE", "PREFERENCE", "SEATS","STEP"] + (["ANNEAL"] if tilted else []) 
+collectible = ["population", "POCVAP20", "VAP20", "MAGNITUDE", "PREFERENCE", "SEATS","STEP"] + (["ANNEAL"] if tilted else []) 
 
 if TEST:
     seatcounts = []
@@ -183,7 +170,7 @@ out = Path(f"./output/chains/{location}-{mag_str}")
 # If we aren't testing -- i.e. if this is a live run -- we save the data and the
 # corresponding assignments to the appropriate location. Otherwise, we save the
 # test data collected.
-if not out.exists(): out.mkdir()
+os.makedirs(f"output/chains/{location.lower()}-{mag_str}", exist_ok = True)
 
 if not TEST:
     with jsonlines.open(out/f"{chaintype}.jsonl", mode="w") as w:

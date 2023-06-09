@@ -44,6 +44,7 @@ turnoutsuffix = ""
 if REDUCEDTURNOUT: turnoutsuffix = "_low_turnout"
 # Load the plans for the ensemble.
 output = Path("./output/")
+
 planpath = Path(output/f"results/{location.name.lower()}/{location.name.lower()}-{mag_str}{nested_str}/")
 
 if location in focus:
@@ -55,7 +56,6 @@ else:
 
 totmembers = (mag_list[0]*3) + (mag_list[1]*4) + (mag_list[2]*5)
 
-sys.stderr.write(f"Starting plot for {mag_list}")
 # Create a mapping for configurations.
 concentrations = {
     "A": [0.5]*4,               # Voters more or less agree on candidate order for each group.
@@ -165,14 +165,10 @@ cdefs = dict(
     zorder=1
 )
 
-
-
 for name, model in modelresults.items():
     for x, share in model.items():
         # Get the appropriate radius relative to the max radius.
         sr = r*np.sqrt(share)
-        print(sr)
-        print(x, ymax-(y+1))
         # Plot a circle!
         color = "steelblue" if name == "Combined" else "mediumpurple"
         C = Circle((x, ymax-(y+1) if name == "Combined" else ymax-y), sr, facecolor=color)
@@ -264,7 +260,8 @@ ax.legend(
 bbox = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
 width, height = bbox.width, bbox.height
 
-figpath = f"./output/figures/nationwide/{location}/ma-{mag_str}"
+figpath = f"./output/figures/nationwide/{location}/{location.lower()}-{mag_str}"
 
 os.makedirs(figpath, exist_ok=True)
 plt.savefig(f"{figpath}/plots-by-model-combined-{mag_str}.png", dpi=600, bbox_inches="tight")
+
